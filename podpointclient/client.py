@@ -35,7 +35,7 @@ class PodPointClient:
         self,
         username: str,
         password: str,
-        session: aiohttp.ClientSession = aiohttp.ClientSession(),
+        session: aiohttp.ClientSession = None,
         include_timestamp: bool = False,
         http_debug: bool = None,
         refresh_token: str = None,
@@ -44,7 +44,9 @@ class PodPointClient:
         """Pod Point API Client."""
         self.email = username
         self.password = password
-        self._session = session
+        # made here, not as a default argument: aiohttp 3.10+ needs a running event loop to make a session, and an
+        # import-time default broke every import of this module (and the integration bundling it) outside a loop
+        self._session = session if session is not None else aiohttp.ClientSession()
         self._http_debug = http_debug if http_debug is not None else False
         self.auth = Auth(
             email=self.email,
