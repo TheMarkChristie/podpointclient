@@ -60,11 +60,14 @@ class PodPointClient:
         self.include_timestamp = include_timestamp
 
     async def async_credentials_verified(self) -> bool:
-        """Perform a minimum call to verify we have working credentials and can get one Pod"""
+        """Perform a minimum call to verify we have working credentials: a token, a session and a pods request
+        that Pod Point answers. An account with no charger on it yet is still a valid account (the charger is linked
+        later in the Pod Home app and is picked up on the next refresh), so an empty pods list is not a failure."""
         await self.auth.async_update_access_token()
 
         pods = await self.async_get_pods(perpage=1, page=1, includes=[])
-        return len(pods) > 0
+        _LOGGER.debug("Credentials verified; %d pod(s) on the account", len(pods))
+        return True
 
     async def async_get_all_pods(
         self,
