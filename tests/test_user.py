@@ -1,4 +1,3 @@
-import imp
 
 from aioresponses import aioresponses
 import aiohttp
